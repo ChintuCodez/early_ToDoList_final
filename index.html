@@ -1,0 +1,22 @@
+<input type="text" placeholder="Your Task" id="inp">
+<button onclick="add()">Add</button>
+<ul id="List Container">
+    <li>
+        First Task
+        <button onclick="del(event)">Delete Task</button>
+    </li>
+</ul>
+
+<script>
+    var ul = document.getElementById("List Container");
+    
+    function add(){
+        var ta = document.getElementById("inp")
+        var li = document.createElement('li')
+        li.innerHTML = ta.value + "<button onclick='del(event)'>Delete Task</button>"
+        ul.append(li)
+    }
+    function del(event) {
+            event.target.parentElement.remove()
+    }
+</script>

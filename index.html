@@ -1,22 +1,51 @@
 <input type="text" placeholder="Your Task" id="inp">
 <button onclick="add()">Add</button>
-<ul id="List Container">
-    <li>
-        First Task
-        <button onclick="del(event)">Delete Task</button>
-    </li>
+<ul id="ListContainer">
 </ul>
 
 <script>
-    var ul = document.getElementById("List Container");
+    const ul = document.getElementById("ListContainer");
+
+    window.onload = loadTasks;
+
+    function loadTasks() {
+        fetch('http://localhost:5000/get_tasks')
+        .then(response => response.json())
+        .then(data => {
+            ul.innerHTML = '';
+            data.forEach(task => {
+                var li = document.createElement('li')
+                li.innerHTML = `${task.task} <button onclick="del(${task.id})">Delete</button>`;
+                ul.append(li)
+            });
+        });
+    }
     
     function add(){
-        var ta = document.getElementById("inp")
-        var li = document.createElement('li')
-        li.innerHTML = ta.value + "<button onclick='del(event)'>Delete Task</button>"
-        ul.append(li)
+        const inp = document.getElementById("inp").value.trim();
+        if (inp === "") return alert("Task cannot be empty"); 
+
+        fetch('http://localhost:5000/add_task', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ task: inp })
+        })
+
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            document.getElementById("inp").value = '';
+            loadTasks()
+        });
     }
-    function del(event) {
-            event.target.parentElement.remove()
+    function del(id) {
+            fetch(`http://localhost:5000/delete_tasks/${id}`, {method: 'DELETE'})
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                loadTasks();
+            });
     }
 </script>
